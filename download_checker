@@ -4,7 +4,7 @@
 #Download Checker#
 ##################
 
-# This tool is inteded for checking md5sums based on a md5 generated checklist. 
+# This tool is intended for checking md5sums based on a md5 generated checklist. 
 # set variables
 md5_checklist="md5checklist.txt"
 columncutter_outputfile="columncutter.out"
