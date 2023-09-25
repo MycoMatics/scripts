@@ -1,0 +1,1 @@
+seqtk sample -s 100 BC02_700-900.fastq 500 >  BC02_700-900_sub500.fastq

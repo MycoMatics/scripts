@@ -1,0 +1,40 @@
+#!/usr/bin/bash
+
+#PBS -N blast.$PBS_JOBID
+#PBS -l nodes=1:ppn=8
+#PBS -o $PBS_JOBID.blast.stdout							
+#PBS -e $PBS_JOBID.blast.stderr
+#PBS -l walltime=48:00:00
+#PBS -m abe
+#PBS -M pieter.asselman@ugent.be
+
+
+ml BLAST+/2.14.0-gompi-2022b
+
+cd $PBS_O_WORKDIR
+
+# Use the ls command to list all .fasta files and store them in an array
+query_files=($(ls /data/gent/vo/001/gvo00142/data_share_group/blast-testrun/*.fa))
+
+# Set the BLAST database you want to use
+database="nt"
+
+# Specify the number of CPU cores or threads to use for parallel processing
+num_threads=18
+
+# Iterate over the query files and run BLAST searches in parallel
+for query_file in "${query_files[@]}"
+do
+    blastn -query "$query_file" \
+            -db "$database" \
+            -out "${query_file%.fasta}_results.txt" \
+            -outfmt "6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames sskingdoms qcovs" \
+            -perc_identity 90 \
+            -max_target_seqs 10 \
+            -num_threads "$num_threads" &
+done
+
+# Wait for all parallel BLAST jobs to complete
+wait
+
+# Combine or analyze the results as necessary

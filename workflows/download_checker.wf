@@ -1,0 +1,133 @@
+#!/bin/bash
+
+##################
+#Download Checker#
+##################
+
+# This tool is inteded for checking md5sums based on a md5 generated checklist. 
+# set variables
+md5_checklist="md5checklist.txt"
+columncutter_outputfile="columncutter.out"
+current_directory=$(pwd)
+
+# Function: Create a md5 checklist based on individual provided md5 files
+function md5_checklist () {
+	cat *.md5 >> "$md5_checklist"
+	echo "$md5_checklist has been created."
+	}
+
+# Function: Column cutter in prep for md5 checklist. for md5sum check a predefinedlist needs to be provided in this format
+	#Example md5_checklist file: <md5sum><space><filename>
+function column_cutter () {
+	local delimiter="$1" #Delimiter types: " ", ",", ";", "\t"
+	local columns="$2" #Example: comma-separated (e.g., 1,3,5)
+	local checklist="$3"
+		# check if checklist exists and/or the checklist argument was provided
+			if [ -z "$3" ]; then
+				echo "Column cutter needs an input file."
+			elif [ -e "$3" ]; then
+				echo "column_cutter is called with arguments: $1, $2, and input file: $3"
+
+		# Use the read command to split the comma-separated list into an array
+				IFS=',' read -ra column_array <<< "$columns"
+
+		# Construct the AWK command to select and save the specified columns
+				awk -v cols="${column_array[*]}" -F "$delimiter" 'BEGIN {OFS=FS} {split(cols, selected, " "); for (i in selected) { gsub(/^[[:space:]]+|[[:space:]]+$/, "", $selected[i]); printf "%s%s", $selected[i], (i == length(selected)) ? "\n" : OFS } }' "$checklist" > "$columncutter_outputfile"
+
+				echo "Selected columns have been saved to $columncutter_outputfile"
+			else
+				echo "Input file '$3' does not exist."
+			fi
+}
+# Function: md5 sum check 
+function sumcheck () {
+	local input_file="$1"
+		# Check if input file exists
+			if [ -z "$1" ]; then
+				echo "sumcheck needs an input file."
+			else
+				echo "Sumcheck begins:"
+			fi
+	md5sum -c "$input_file" | tee sumcheck.out
+}
+
+# Function : HELP
+function help () {
+	echo "##################"
+	echo "#Download Checker#"
+	echo "##################"
+	echo ""
+	echo "DESCRIPTION:"
+	echo ""
+	echo "This script can build a concatenated md5 file (md5_checklist), then compare md5 files (sumcheck) from you download files."
+	echo "If you want to build your own md5 checklist and need to cut up a delimited file use the (column cutter function)."
+	echo "USAGE: download_checker.sh"
+	echo ""
+	echo "OPTIONS:"
+	echo ""
+	echo "  -m | md5-checklist	Create a md5 checklist based on provided md5 file. Format: <md5sum><space><filename>.
+			ARGUMENTS: no arguments necessary, make sure you have multiple .md5 files in this path:
+				=> $current_directory/"
+	echo ""
+	echo "  -c | column_cutter	Cut columns based on 3 arguments
+			ARGUMENTS:	(1) delimiter
+					(2) columns comma separated(eg 1,3,5)
+					(3) inputfile"
+	echo ""
+	echo "  -s | sum_check	Compare your own sumchecks with the file provided ones.
+			ARGUMENTS:	(1) md5_checklist inputfile 
+			Example md5_checklist file: <md5sum><space><filename>"
+		echo ""
+	echo "  -h   Display this help message"
+	echo ""
+	
+	echo "EXAMPLE:"
+	echo "(1) Create a MD5 checklist, use the -m option:"
+	echo ""
+	echo "	./download_checker.sh -m"
+	echo ""
+	echo "(2) Use the column cutter, use the -c option:"
+	echo ""
+	echo "	./download_checker.sh -c ; 1,2 yourinputfile.txt "
+	echo ""
+	echo "(3) MD5 sum check on a list of files, use the option -s:"
+	echo ""
+	echo "	./download_checker.sh -s <your md5 checklist>"
+
+}
+
+# Main script
+if [[ $# -eq 0 ]]; then
+    help
+    exit 1
+fi
+
+while getopts "mc:s:h" opt; do
+#m:c:s:h in this way getops expects arguments for each flag, ommit the : after the flag for which you don't want to provide an argument
+	case "$opt" in
+			m)
+					md5_checklist
+					exit 0
+					;;
+			c)
+					column_cutter "${OPTARG}" "${@:OPTIND:2}"
+					exit 0
+					;;
+			s)
+					sumcheck "${OPTARG}"
+					exit 0
+					;;
+			h)
+					help
+					exit 0
+					;;
+			*)
+					help
+					exit 1
+					;;
+	esac
+done
+
+# If no valid options are provided, display help
+help
+exit 1
