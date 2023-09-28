@@ -13,6 +13,12 @@ ml BLAST+/2.14.0-gompi-2022b
 
 cd $PBS_O_WORKDIR
 
+#RESOURCES
+    # CPU: As a rough guideline, allocating 1-2 CPU cores per gigabyte (GB) of the database can be a starting point for efficient searches.
+        # e.g. NCBI a 1TB database, you might allocate 100-200 CPU cores for efficient performance.
+    # RAM:As a rough estimate, BLAST may require around 1-2 GB of RAM per thread or CPU core for efficient operation.
+        # Therefore, with 100-200 CPU cores allocated, you might need 100-200 GB of RAM.
+        
 # Available Data bases installed. => !!! ADD PATH TO # VARIABLES !!!
 
     # NCBI NT database: /data/gent/vo/001/gvo00142/data_share_group/databases_blast/nt/nt
@@ -25,6 +31,8 @@ IDENTITY=90
 MAX_TARGET_SEQS=1
 THREADS=20
 OUTFMT="6 qseqid sseqid pident length mismatch gapopen qstart qend sstart send evalue bitscore staxids sscinames sskingdoms qcovs"
+
+#CODE
 
 for file in *.fa; do
  output_file="${file%.fa}.blast.out"
