@@ -1,0 +1,20 @@
+section	dataset_or_metric	value	note
+classification	D1_total_original	993738	pre-standardization denominator
+classification	D1_standardized	993564	174 unresolved
+classification	D1_conf080	724964	72.95% of original
+classification	D3_total_original	12695049	all standardized
+classification	D3_conf080	9292552	73.20% of original
+classification	D4_total_original	44242882	pre-standardization denominator
+classification	D4_standardized	44211759	31,123 unresolved
+classification	D4_conf080	30605727	69.18% of original
+community_A1filtered90	CD1_SH	470	final four-dataset run
+community_A1filtered90	CD3_SH	501	final four-dataset run
+community_A1filtered90	CD4_SH	932	final four-dataset run
+community_A1filtered90	shared_CD1_CD3_CD4_SH	455	final four-dataset run
+community_A1filtered90	CD4_unique_vs_CD1_CD3_SH	421	7,754 reads
+PERMANOVA_CD1_CD3	Bray_Curtis_R2	7.894025e-05	p=0.266
+PERMANOVA_CD1_CD3	Hellinger_R2	5.870674e-05	p=0.603
+PERMANOVA_CD1_CD3	Robust_Aitchison_R2	0.0021537	p=0.001
+PERMANOVA_CD1_CD4	Bray_Curtis_R2	0.0005307097	p=0.001
+PERMANOVA_CD1_CD4	Hellinger_R2	0.000665875	p=0.001
+PERMANOVA_CD1_CD4	Robust_Aitchison_R2	0.03458286558	p=0.001
